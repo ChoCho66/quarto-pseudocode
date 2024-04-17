@@ -11,7 +11,7 @@ local function ensure_html_deps()
       d.querySelectorAll(".pseudocode-container").forEach(function(el) {
         let pseudocodeOptions = {
           indentSize: el.dataset.indentSize || "1.2em",
-          commentDelimiter: el.dataset.commentDelimiter || "//",
+          commentDelimiter: el.dataset.commentDelimiter || "▷",
           lineNumber: el.dataset.lineNumber === "true" ? true : false,
           lineNumberPunc: el.dataset.lineNumberPunc || ":",
           noEnd: el.dataset.noEnd === "true" ? true : false,
