@@ -107,6 +107,10 @@
 ```
 ````
 
+在 vscode 的 markdown preview 里预览效果如下：
+
+![](examples/example_div/preview1.png)
+
 ### 使用 div-pseudocode 的写法
 ````markdown
 ::: {.pseudocode}
@@ -134,3 +138,7 @@
 - **Until** converged
 :::
 ````
+
+在 vscode 的 markdown preview 里预览效果如下：
+
+![](examples/example_div/preview2.png)
