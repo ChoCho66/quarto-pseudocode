@@ -142,3 +142,9 @@
 在 vscode 的 markdown preview 里预览效果如下：
 
 ![](examples/example_div/preview2.png)
+
+而生成的 html, pdf 如下：
+
+html | pdf
+------- | -------
+![](examples/example_div/html.png) | ![](examples/example_div/pdf.png)

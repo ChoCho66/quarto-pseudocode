@@ -330,3 +330,30 @@ Test statements and comments is shown as @alg-test-statements-and-comments.
 - **EndProcedure**
 :::
 ::::
+
+## DDPM
+
+::: {.pseudocode}
+#| label: DDPM2
+#| html-indent-size: "1.2em"
+#| html-comment-delimiter: "▷"
+#| html-line-number: true
+#| html-line-number-punc: ":"
+#| html-no-end: false
+#| pdf-placement: "htb!"
+#| pdf-line-number: true
+
+#### Training (DDPM)
+
+- **Repeat**
+  - $t\sim \text{Uniform}(\lbrace 1,\cdots,T \rbrace)$
+    - **Comment** Sample random step
+  - $x_0\sim q(x_0)$
+    - **Comment** Sample random initial image
+  - $\overline{\varepsilon}_t\sim \mathcal{N}(\mathbf{0},\mathbf{I})$
+    - **Comment** Sample random noise
+  - $x_t = \sqrt{\overline{\alpha}_t}x_0 + \sqrt{1-\overline{\alpha}_t}\cdot \overline{\varepsilon}_t$ 
+  - Take gradient descent step on $\Bigl\lVert \overline{\varepsilon}_t - \mathtt{Net}_{\theta}(x_t,t) \Bigr\rVert^2$
+    - **Comment** Optimization
+- **Until** converged
+:::
