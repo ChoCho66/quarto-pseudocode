@@ -1,0 +1,336 @@
+---
+title: "Quarto Pseudocode Extension Example"
+filters:
+  - pseudocode
+pseudocode:
+  caption-prefix: "算法"
+  reference-prefix: "算法"
+format:
+  # native: default
+  html:
+    include-in-header:
+      text: |
+        <script>
+        MathJax = {
+          loader: {
+            load: ['[tex]/boldsymbol']
+          },
+          tex: {
+            tags: "all",
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+            packages: {
+              '[+]': ['boldsymbol']
+            }
+          }
+        };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage{xeCJK}
+    # documentclass: ctexart
+    include-before-body:
+      text: |
+        \renewcommand{\Return}{\State \textbf{return}~}
+        \newcommand{\Print}{\State \textbf{print}~}
+        \newcommand{\Break}{\State \textbf{break}}
+        \newcommand{\Continue}{\State \textbf{continue}}
+        \newcommand{\True}{\textbf{true}}
+        \newcommand{\False}{\textbf{false}}
+        \renewcommand{\And}{\textbf{and}~}
+        \newcommand{\Or}{\textbf{or}~}
+        \renewcommand{\Not}{\textbf{not}~}
+        \newcommand{\To}{\textbf{to}~}
+        \newcommand{\DownTo}{\textbf{downto}~}
+    pdf-engine: xelatex
+    keep-tex: true
+---
+
+我们可以使用 pseudocode 的 `div`，以便我们在编辑时可以预览 pseudocode。
+
+![在 VSCode 上預覽](preview_pseudocode.png)
+
+作法是将 `div` 里的元素逐个变成原本要的格式[^1]。
+
+[^1]: 见 `pseudocode_div.lua` 里的 `function stringify_el_pseudocode_plain(el)`
+
+使用方式如下：
+
+- 原本的
+  ````markdown
+  ```pseudocode
+  ```
+  ````
+  变成使用
+  ````markdown
+  ::: {.pseudocode}
+  :::
+  ````
+
+- 不需再使用 `\begin{algorithm}`, `\begin{algorithmic}`，并且将  `\caption{bla bla}` 改成 `#### bla bla`。
+
+- 内容都要弄成 unordered List.
+
+- 不需使用 `\State`。
+
+- `\For`, `\If`, `\EndIf`, `\Procedure` 改成`**For**`, `**If**`, `**Procedure**` 且后面内容不需要括号起来。
+  - 这里的 `\For`, `\If` 开头都要大写，`\EndIf` 的 `If` 要大写。
+
+- `\Call{Partition}{$A,p,r$}` 改成 `[**Partition**$(A,p,r)$](Call)`。
+
+
+## 一些限制
+
+- 如果 caption 要空白，则得需要 `#### `。
+- `#### caption` 跟 `#| html-line-number: true` 这些得留一个空行。
+- 这里的 unordered list 不能有跨行，且每句不能换行。
+  例如
+  ````markdown
+  ::: {.pseudocode}
+
+  #### 
+  - bla bla.
+  - bla bla.
+  :::
+  ````
+  **不能**是下面这两种
+  ````markdown
+  ::: {.pseudocode}
+
+  #### 
+  - bla bla.
+
+  - bla bla.
+  :::
+  ````
+  ````markdown
+  ::: {.pseudocode}
+
+  #### 
+  - bla 
+    bla.
+  - bla bla.
+  :::
+  ````
+
+# Examples
+
+## Empty Caption
+
+如果我们想要一个空的标题，我们必须包含一个空的 `####`。
+
+::: {.pseudocode}
+
+#### 
+
+- $f(x) = y$
+:::
+
+
+## Function, Procedure and Call
+
+::: {.pseudocode}
+#| html-comment-delimiter: "▷"
+#| html-line-number: true
+#| html-line-number-punc: ":"
+#| pdf-line-number: true
+#| pdf-placement: "H"
+
+#### Quicksort
+- **Function** **Quicksort**$(A,p,r)$
+  - **If** $p<r$
+    - $q=$ [**Partition**$(A,p,r)$](Call)
+    - [**Partition**$(A,p,q-1)$](Call)
+    - [**Partition**$(A,q+1,r)$](Call)
+  - **EndIf**
+- **EndFunction**
+- **Procedure** **Partition**$(a,p,r)$
+  - $x=A[r]$
+  - $i=p-1$
+  - **For** $j=p$ **to** $r-1$
+    - **If** $A[j]<x$
+      - $i=i+1$
+      - exchange $A[i]$ with $A[j]$
+    - **EndIf**
+    - exchange $A[i]$ with $A[r]$
+  - **EndFor**
+- **EndProcedure**
+:::
+
+## Comment
+
+如果要使用 comment (`<!--comment -->`)，则需要 comment 上下各空一行。
+
+::: {.pseudocode}
+#| html-comment-delimiter: "▷"
+#| html-line-number: true
+#| html-line-number-punc: ":"
+#| pdf-line-number: true
+#| pdf-placement: "H"
+
+####
+
+<!-- comment here ! -->
+
+- **Function** **Quicksort**$(A,p,r)$
+  - **If** $p<r$
+    - $q=$ [**Partition**$(A,p,r)$](Call)
+    - [**Partition**$(A,p,q-1)$](Call)
+    - [**Partition**$(A,q+1,r)$](Call)
+
+    <!-- comment here ! -->
+
+  - **EndIf**
+- **EndFunction**
+:::
+
+# `simple/simple.qmd` 里的例子
+
+## Test control blocks
+
+Test control blocks is shown as @alg-test-control-blocks-part-1 and @alg-test-control-blocks-part-2.
+
+::: {.pseudocode}
+#| label: alg-test-control-blocks-part-1
+#| pdf-placement: "H"
+
+#### Test control blocks - Part 1
+
+- **Procedure** **Test-If**
+  - **If** cond0
+    - block0
+  - **ElsIf** cond1
+    - block1
+  - **Else**
+    - block2
+  - **EndIf**
+- **EndProcedure**
+- **Procedure** **Test-For**$(n)$
+  - $i \gets 0$
+  - **For** $i < n$
+    - **Print** $i$
+    - $i \gets i + 1$
+  - **EndFor**
+- **EndProcedure**
+- **Procedure** **Test-For-To**$(n)$
+  - $i \gets 0$
+  - **For** $i$ **to** $n$
+    - **Print** $i$
+  - **EndFor**
+- **EndProcedure**
+- **Procedure** **Test-For-DownTo**$(n)$
+  - **For** $i \gets n$ **downto** $0$
+    - **Print** $i$
+  - **EndFor**
+- **EndProcedure**
+- **Procedure** **Test-For-All**$(n)$
+  - **ForAll** $i \in \{0, 1, \cdots, n\}$
+    - **Print** $i$
+  - **EndFor**
+- **EndProcedure**
+:::
+
+::: {.pseudocode}
+#| label: alg-test-control-blocks-part-2
+#| pdf-placement: "H"
+
+#### Test control blocks - Part 2
+- **Procedure** **Test-While**$(n)$
+  - $i \gets 0$
+  - **While** $i < n$
+    - **Print** $i$
+    - $i \gets i + 1$
+  - **EndWhile**
+- **EndProcedure**
+- **Procedure** **Test-Repeat**$(n)$
+  - $i \gets 0$
+  - **Repeat**
+    - **Print** $i$
+    - $i \gets i + 1$
+  - **Until** $i>n$
+- **EndProcedure**
+- **Procedure** **Test-Break-Continue**$(n)$
+  - **For** $i = 0$ **to** $2n$
+    - **If** $i < n/2$
+      - **Continue**
+    - **ElsIf** $i > n$
+      - **Break**
+    - **EndIf**
+    - **Print** $i$
+  - **EndFor**
+- **EndProcedure**
+:::
+
+## Test statements and comments
+
+Test statements and comments is shown as @alg-test-statements-and-comments.
+
+::: {.pseudocode}
+#| label: alg-test-statements-and-comments
+#| pdf-placement: "H"
+
+#### Test statements and comments
+- **Procedure** **Test-Statements**
+  - This line is a normal statement
+  - **Print** this is print statement
+  - **Return** $retval$
+- **EndProcedure**
+- **Procedure** **Test-Comments**
+  - **Comment** comment for Procedure
+  - a statement 
+    - **Comment** inline comment
+  - $\quad$
+    - **Comment** line comment
+  - **If** some condition
+    - **Comment** comment for if
+    - **Return** **true**
+      - **Comment** another inline comment
+  - **Else** 
+    - **Comment** comment for else
+    - **Return** **false**
+      - **Comment** yet another inline comment
+  - **EndIf**
+- **EndProcedure**
+:::
+
+## Test pseudocode in custom block
+
+:::: {.content-visible when-format="html"}
+::: {.pseudocode}
+#| label: alg-test-content-visible-html
+#| pdf-placement: "H"
+
+#### Test content visible
+- **Procedure** **Test-Content-Visible**
+  - ONLY IN HTML FORMAT
+- **EndProcedure**
+:::
+::::
+
+:::: {.content-visible when-format="pdf"}
+::: {.pseudocode}
+#| label: alg-test-content-visible-pdf
+#| pdf-placement: "H"
+
+#### Test content visible
+- **Procedure** **Test-Content-Visible**
+  - ONLY IN PDF FORMAT
+- **EndProcedure**
+:::
+::::
+
+:::: {.callout-note}
+::: {.pseudocode}
+#| label: alg-test-callout
+#| pdf-placement: "H"
+
+#### Test callout
+- **Procedure** **Test-Callout**
+  - CALLOUT TEST
+- **EndProcedure**
+:::
+::::
